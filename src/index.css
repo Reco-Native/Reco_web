@@ -1,13 +1,46 @@
-body {
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Nunito", sans-serif;
+  scroll-behavior: smooth;
+}
+:root {
+  --header-font: "Jost", sans-serif;
+  --color-primary: #00b0a9;
+  --color-secondary: #414042;
+  --color-gray: #78828a;
+  --color-gray-light: #a8aeb4;
+  --color-light: #faf6f9;
+  --color-header: #34395e;
+  --color-header-two: #536479;
+  --color-red: #fc544b;
+  --color-main: #00cccc;
+  --linear: linear-gradient(
+    90deg,
+    rgba(36, 30, 30, 1) 40%,
+    rgba(61, 49, 49, 1) 100%
+  );
+  --background: rgb(67, 171, 171);
+  /* RGB 0, 204,204 */
+  --font-Smaller: clamp(0.78rem, calc(0.71rem + 0.36vw), 0.96rem);
+  --font-para: clamp(0.75rem, calc(0.73rem + 0.43vw), 1rem);
+  --font-xtraSmaller: clamp(0.94rem, calc(0.83rem + 0.53vw), 1.2rem);
+  --font-Small: clamp(1.25rem, calc(0.97rem + 0.75vw), 1.3rem);
+  --font-xtraSmall: clamp(1.35rem, calc(1.13rem + 1.05vw), 1.88rem);
+  --font-Medium: clamp(1.52rem, calc(1.31rem + 1.45vw), 2.3rem);
+  --font-xtraMedium: clamp(1.64rem, calc(1.52rem + 1.97vw), 2.73rem);
+  --font-Big: clamp(2.33rem, calc(1.77rem + 2.66vw), 3.66rem);
+  --font-xtraBig: clamp(2.8rem, calc(2.04rem + 3.56vw), 4.58rem);
+  --box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  /* -webkit-box-shadow: -7px 10px 112px -9px rgba(0,0,0,0.32);
+-moz-box-shadow: -7px 10px 112px -9px rgba(0,0,0,0.32); */
 }
