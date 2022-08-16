@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Button from "../component/FormElements/Button";
 import Input from "../component/FormElements/Input";
 import styled from "styled-components";
-import { ThemeContextAPI } from "../context/useContext";
 
 const ButtonWrapper = styled.div`
   margin-bottom: 25px;
@@ -18,9 +17,8 @@ const ButtonWrapper = styled.div`
     font-weight: 500;
   }
 `;
-const FormAdmin = ({ handleLogin, isLoading, keep }) => {
+const FormAdmin = ({ handleLogin, isLoading, keep, setFormdata, formdata }) => {
   const userRef = useRef();
-  const { setFormdata, formdata } = useContext(ThemeContextAPI);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -66,7 +64,7 @@ const FormAdmin = ({ handleLogin, isLoading, keep }) => {
       />
       <ButtonWrapper keep={keep}>
         <Button
-          text="Login"
+          text={isLoading ? "Loading..." : "Login"}
           height="50px"
           width={"100%"}
           disabled={isLoading}

@@ -1,8 +1,12 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
+import axios from "../api";
+import { ThemeContextAPI } from "../context/useContext";
+import { useDispatch } from "react-redux";
 import FormAdmin from "./FormAdmin";
+import { setUser } from "../store/slice/user";
+import CryptoJS from "crypto-js";
 
 const Section = styled.section`
   position: relative;
@@ -71,8 +75,41 @@ const Card = styled.div`
 `;
 
 const Login = () => {
-  //   const dispatch = useDispatch();
-  //   const navigate = useNavigate();
+  const { setFormdata, formdata } = useContext(ThemeContextAPI);
+  const [isLoading, setIsLoading] = useState(false);
+  // const { data, error, isLoading } = useGetLoginQuery(formdata);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const { email, password } = formdata.controls;
+    setIsLoading(true);
+    const data = {
+      usernameOrEmail: email,
+      password: password,
+    };
+    try {
+      const response = await axios.post(`/auth/login`, data);
+      if (response.data.message === "Login Successful!") {
+        var ciphertext = CryptoJS.AES.encrypt(
+          JSON.stringify(response.data),
+          "secret key 123"
+        ).toString();
+        console.log(response);
+        dispatch(setUser(ciphertext));
+        setIsLoading(false)
+        navigate("/dashboard");
+      } else {
+        alert(response.data.message);
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Section>
@@ -83,7 +120,12 @@ const Login = () => {
             <Link to="/">Home</Link>
           </div>
           <div className="card-body">
-            <FormAdmin />
+            <FormAdmin
+              handleLogin={handleLogin}
+              isLoading={isLoading}
+              setFormdata={setFormdata}
+              formdata={formdata}
+            />
           </div>
         </Card>
       </div>

@@ -46,3 +46,10 @@ export const AdminSideBarStyle = css`
     overflow-y: auto;
   }
 `;
+
+
+export const SectionStyles = css`
+  background-color: #f9f9f9;
+  height: 100%;
+
+`
