@@ -46,7 +46,7 @@ const Container = styled.div`
   }
 `;
 
-const Header = ({ title, Giftcard }) => {
+const Header = ({ title, Giftcard, handleShowModal, addCurrency }) => {
   return (
     <Container>
       <div>
@@ -58,6 +58,17 @@ const Header = ({ title, Giftcard }) => {
                 text={"Add Card"}
                 background="var(--color-main)"
                 padding={"10px 15px"}
+                onClick={handleShowModal}
+              />
+            </div>
+          )}
+          {addCurrency && (
+            <div>
+              <Button
+                text={"Add Card"}
+                background="var(--color-main)"
+                padding={"10px 15px"}
+                onClick={handleShowModal}
               />
             </div>
           )}

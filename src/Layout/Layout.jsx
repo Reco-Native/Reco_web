@@ -30,7 +30,7 @@ const Layout = () => {
   return (
     <React.Fragment>
       <LayoutContainer
-        grid={navtoggle}
+        grid={navtoggle ? 'true' : 'false'}
         as={motion.div}
         initial={{ gridTemplateColumns: "250px 1fr" }}
         animate={{ gridTemplateColumns: navtoggle ? "65px 1fr" : "250px 1fr" }}

@@ -4,14 +4,18 @@ export const ComponentSlice = createSlice({
   name: "component",
   initialState: {
     navtoggle: false,
+    token: ''
   },
   reducers: {
     setNavToggle: (state, action) => {
       state.navtoggle = action.payload;
     },
+    getToken: (state, action) => {
+      state.token = action.payload
+    }
   },
   extraReducers: {},
 });
 
-export const { setNavToggle } = ComponentSlice.actions;
+export const { setNavToggle, getToken } = ComponentSlice.actions;
 export default ComponentSlice.reducer;

@@ -1,24 +1,20 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
-
-
-
-
-// Define a service using a base URL and expected endpoints
-export const LoginAPI = createApi({
-  reducerPath: "loginAPI",
+export const loginUser = createApi({
+  reducerPath: "loginUser",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://rico-card-service.herokuapp.com/api",
   }),
+  tagTypes: ["Post"],
   endpoints: (builder) => ({
-    getLogin: builder.query({
-      query: (data) =>
-        `/auth/login?usernameOrEmail=${data.email}&password=${data.password}`,
+    loginUser: builder.mutation({
+      query: (payload) => ({
+        url: "/auth/login",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["Post"],
     }),
   }),
 });
-
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-export const { useGetLoginQuery} = LoginAPI;
+export const { useLoginUserMutation } = loginUser;

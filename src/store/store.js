@@ -1,26 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 import ComponentSlice from "./slice/componentSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { LoginAPI } from "./services/login";
+import { loginUser } from "./services/login";
 import { UserSlice } from "./slice/user";
-
-
-// export const store = configureStore({
-//   reducer: {
-//     component: ComponentSlice,
-//     devTools: process.env.NODE_ENV === "development",
-//   },
-
-//   // Add your middleware here
-//   // ...
-// });
-
-
+import { createCard } from "./services/createCard";
+import { createCurrency } from './services/createCurrency'
+import { fetchCurrency } from "./services/fetchCurrency";
 
 export const store = configureStore({
   reducer: {
     // Add the generated reducer as a specific top-level slice
-    [LoginAPI.reducerPath]: LoginAPI.reducer,
+    [loginUser.reducerPath]: loginUser.reducer,
+    [createCard.reducerPath]: createCard.reducer,
+    [createCurrency.reducerPath]: createCurrency.reducer,
+    [fetchCurrency.reducerPath]: fetchCurrency.reducer,
     devTools: process.env.NODE_ENV === "development",
     component: ComponentSlice,
     user: UserSlice,
@@ -28,8 +21,12 @@ export const store = configureStore({
   // Adding the api middleware enables caching, invalidation, polling,
   // and other useful features of `rtk-query`.
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(LoginAPI.middleware),
-  
+    getDefaultMiddleware().concat([
+      loginUser.middleware,
+      createCard.middleware,
+      createCurrency.middleware,
+      fetchCurrency.middleware,
+    ]),
 });
 
 // optional, but required for refetchOnFocus/refetchOnReconnect behaviors

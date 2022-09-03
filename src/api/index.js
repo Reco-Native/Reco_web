@@ -5,3 +5,4 @@ const LoginURL = "https://rico-card-service.herokuapp.com/api";
 export default axios.create({
   baseURL: LoginURL
 });
+

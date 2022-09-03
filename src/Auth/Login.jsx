@@ -1,12 +1,13 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import axios from "../api";
 import { ThemeContextAPI } from "../context/useContext";
 import { useDispatch } from "react-redux";
 import FormAdmin from "./FormAdmin";
 import { setUser } from "../store/slice/user";
 import CryptoJS from "crypto-js";
+import { useLoginUserMutation } from "../store/services/login";
+import { getToken } from "../store/slice/componentSlice";
 
 const Section = styled.section`
   position: relative;
@@ -75,41 +76,49 @@ const Card = styled.div`
 `;
 
 const Login = () => {
+  const [loginUser, { isLoading, error, isSuccess, isError, data }] =
+    useLoginUserMutation();
   const { setFormdata, formdata } = useContext(ThemeContextAPI);
-  const [isLoading, setIsLoading] = useState(false);
-  // const { data, error, isLoading } = useGetLoginQuery(formdata);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     const { email, password } = formdata.controls;
-    setIsLoading(true);
-    const data = {
+    // setIsLoading(true);
+    const form = {
       usernameOrEmail: email,
       password: password,
     };
-    try {
-      const response = await axios.post(`/auth/login`, data);
-      if (response.data.message === "Login Successful!") {
-        var ciphertext = CryptoJS.AES.encrypt(
-          JSON.stringify(response.data),
+
+    loginUser(form);
+
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      if (isSuccess) {
+        let ciphertext = CryptoJS.AES.encrypt(
+          JSON.stringify(data),
           "secret key 123"
         ).toString();
-        console.log(response);
-        dispatch(setUser(ciphertext));
-        setIsLoading(false)
+
+        localStorage.setItem("user", ciphertext);
+        dispatch(getToken(data));
         navigate("/dashboard");
-      } else {
-        alert(response.data.message);
-        setIsLoading(false);
       }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setIsLoading(false);
+      if (isError) {
+        alert("Something went wrong");
+      }
     }
-  };
+
+    return () => {
+      mounted = false;
+    };
+  }, [isSuccess, isError]);
 
   return (
     <Section>
