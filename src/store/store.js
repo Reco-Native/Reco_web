@@ -1,32 +1,33 @@
-import { configureStore } from "@reduxjs/toolkit";
-import ComponentSlice from "./slice/componentSlice";
-import { setupListeners } from "@reduxjs/toolkit/query";
-import { loginUser } from "./services/login";
-import { UserSlice } from "./slice/user";
-import { createCard } from "./services/createCard";
-import { createCurrency } from './services/createCurrency'
-import { fetchCurrency } from "./services/fetchCurrency";
-
+import { configureStore } from '@reduxjs/toolkit';
+import ComponentSlice from './slice/componentSlice';
+import { setupListeners } from '@reduxjs/toolkit/query';
+import login from './slice/loginSlice';
+import message from './slice/messageSlice';
+import currencySlice from './slice/currencySlice';
+import categorySlice from './slice/categorySlice';
+import giftCardSlice from './slice/giftCardslice';
+import { UserSlice } from './slice/user';
+import transactionSlice from './slice/transactionSlice';
 export const store = configureStore({
   reducer: {
     // Add the generated reducer as a specific top-level slice
-    [loginUser.reducerPath]: loginUser.reducer,
-    [createCard.reducerPath]: createCard.reducer,
-    [createCurrency.reducerPath]: createCurrency.reducer,
-    [fetchCurrency.reducerPath]: fetchCurrency.reducer,
-    devTools: process.env.NODE_ENV === "development",
+
+    devTools: process.env.NODE_ENV === 'development',
     component: ComponentSlice,
     user: UserSlice,
+    login: login,
+    message: message,
+    currency: currencySlice,
+    category: categorySlice,
+    giftcard: giftCardSlice,
+    transaction: transactionSlice,
   },
   // Adding the api middleware enables caching, invalidation, polling,
   // and other useful features of `rtk-query`.
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([
-      loginUser.middleware,
-      createCard.middleware,
-      createCurrency.middleware,
-      fetchCurrency.middleware,
-    ]),
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 // optional, but required for refetchOnFocus/refetchOnReconnect behaviors

@@ -45,8 +45,8 @@ const Selects = ({
         {defaults}
         </option>
         {option?.map((item) => (
-          <option value={item.name} key={item.name}>
-            {item?.name}
+          <option value={item.name || item?.id} key={item.name}>
+            {item?.name || `${item?.categoryName}/${item?.country?.name}`}
           </option>
         ))}
       </Select>

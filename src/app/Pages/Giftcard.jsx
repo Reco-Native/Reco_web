@@ -1,24 +1,22 @@
-import React, { useEffect } from "react";
-import Header from "../../component/Nav/Header";
-import styled from "styled-components";
-import { SectionStyles } from "../../style/styles.";
-import Modal from "../../component/Modal/Modal";
-import useMediaQuery from "../../hooks/useMediaQuery/useMediaQuery";
-import Input from "../../component/FormElements/Input";
-import { ThemeContextAPI } from "../../context/useContext";
-import Button from "../../component/FormElements/Button";
-import Selects from "../../component/FormElements/Select";
-import {
-  useAddNewCardMutation,
-  useDeleteCardMutation,
-  useGetCardsMutation,
-} from "../../store/services/createCard";
-import { useGetCurrencyMutation } from "../../store/services/fetchCurrency";
-import { useCallback } from "react";
-import IconsMain from "../../component/Icon";
+import React, { useCallback, useEffect, useMemo } from 'react';
+import Header from '../../component/Nav/Header';
+import styled from 'styled-components';
+import { SectionStyles } from '../../style/styles.';
+import { useDispatch, useSelector } from 'react-redux';
+import { CreateGiftCard, DeleteCard, GetCards } from '../../store/services/giftCard';
+import Modal from '../../component/Modal/Modal';
+// import useMediaQuery from '../../hooks/useMediaQuery/useMediaQuery';
+import { Input, Select } from 'antd';
+import { ThemeContextAPI } from '../../context/useContext';
+// import Button from '../../component/FormElements/Button';
+
+import IconsMain from '../../component/Icon';
+import { clearMessage } from '../../store/slice/messageSlice';
+import { Notification } from '../../component/Notification/Notification';
 
 const Section = styled.section`
   ${SectionStyles}
+  height: unset;
 `;
 
 const FormContainer = styled.div`
@@ -31,115 +29,106 @@ const FormContainer = styled.div`
 
 const CardType = [
   {
-    id: 1,
-    name: "ECode",
+    key: 1,
+    label: 'ECode',
+    value: 'Ecode',
   },
   {
-    id: 2,
-    name: "Physical",
+    key: 2,
+    label: 'Physical',
+    value: 'Physical',
   },
 ];
 
 const Cardcategory = [
   {
     id: 1,
-    name: "10-50",
+    name: '10-50',
   },
   {
     id: 2,
-    name: "51-100",
+    name: '51-100',
   },
   {
     id: 3,
-    name: "101-200",
+    name: '101-200',
   },
 ];
 
 const Giftcard = () => {
-  const [addNewCard, { isSuccess, isLoading, isError }] =
-    useAddNewCardMutation();
-  const [getCards, { data: AllCards }] = useGetCardsMutation();
-  const [deleteCard] = useDeleteCardMutation();
+  const dispatch = useDispatch();
+  const { categories } = useSelector((state) => state.category);
+  const { message } = useSelector((state) => state.message);
+  const { isGetting, giftcards, isCreating } = useSelector((state) => state.giftcard);
+
+  useEffect(() => {
+    const getCard = () => {
+      const data = '';
+      dispatch(GetCards({ data }));
+    };
+
+    getCard();
+  }, []);
+
   const { setFormdata, formdata } = React.useContext(ThemeContextAPI);
   const userRef = React.useRef();
-  const Query = useMediaQuery("(min-width: 66rem)");
   const [showModal, setShowModal] = React.useState(false);
-  const [useCurrency, setUseCurrency] = React.useState("");
-  const [rate, setRate] = React.useState("");
-  const [pic, setPic] = React.useState("");
-
-  function handleImage(event) {
-    const img = event.target.files[0];
-    setPic(URL.createObjectURL(img));
-  }
-
-  const [getCurrency, { data }] = useGetCurrencyMutation();
+  const [rate, setRate] = React.useState('');
 
   const handleShowModal = () => {
     setShowModal((prev) => !prev);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = (data, value, name) => {
     setFormdata((s) => ({
       ...s,
       controls: {
         ...s.controls,
-        [name]: value,
+        [name]: !value ? data.target.value : value,
       },
     }));
   };
 
   const handleDeleteCard = async (id) => {
-    await deleteCard(id);
-      await getCards();
+    const data = Number(id);
+    dispatch(DeleteCard({ data }));
   };
 
   const handleCreateCard = async (e) => {
     e.preventDefault();
 
-    const { cardName, cardType, category, rmb, country, cardRate, profit } =
-      formdata.controls;
-    const current = useCurrency.currency;
-    const ID = useCurrency.id;
-    const image = pic;
+    const { cardName, cardType, category, rmb, cardRate, profit, image } = formdata.controls;
 
-    const form = {
+    const data = {
       name: cardName,
-      type: cardType,
-      category: category,
-      country: {
-        id: ID,
-        name: country,
-        currency: current,
-      },
+      type: cardType?.label,
+      category: categories?.find((c) => parseInt(c.id) === parseInt(category.key)),
+
       rmbRate: rmb,
       cardRate: cardRate,
       profit: profit,
       image: image,
     };
 
-    await addNewCard(form);
-    await getCards()
+    dispatch(CreateGiftCard({ data, setShowModal, setFormdata }));
   };
 
   React.useEffect(() => {
     userRef?.current?.focus();
   }, []);
 
-  useEffect(() => {
-    async function fetchCurrency() {
-      await getCurrency();
-      await getCards();
-    }
-    fetchCurrency();
-  }, []);
-
-  const findCurrency = useCallback(async () => {
-    const country = formdata.controls.country;
-    const currency = data.find((item) => item.name === country);
-    setUseCurrency(currency);
-  }, [data, formdata.controls.country]);
+  const CategoryList = useMemo(() => {
+    return categories && categories.length > 0
+      ? categories.map((item) => {
+          return {
+            label: item.categoryName,
+            key: item.id,
+            value: item.categoryName,
+            country: item.country,
+          };
+        })
+      : [];
+  }, [categories]);
 
   const calculateRate = useCallback(() => {
     const rmb = formdata.controls.rmb;
@@ -151,217 +140,180 @@ const Giftcard = () => {
     }
 
     setRate(usedValue?.toFixed(0));
-  }, [
-    formdata.controls.cardRate,
-    formdata.controls.profit,
-    formdata.controls.rmb,
-  ]);
+  }, [formdata.controls.cardRate, formdata.controls.profit, formdata.controls.rmb]);
 
   useEffect(() => {
     calculateRate();
   }, [calculateRate]);
 
   useEffect(() => {
-    findCurrency();
-  }, [findCurrency]);
-
-  useEffect(() => {
-    let mount = true;
-    if (mount) {
-      if (isSuccess) {
-        alert("New card Added");
-        setUseCurrency("");
-        setRate("");
-        setShowModal((prev) => !prev);
-
-        setFormdata((s) => ({
-          ...s,
-          controls: {
-            ...s,
-            cardName: "",
-            cardType: "",
-            category: "",
-            rmb: "",
-            country: "",
-            cardRate: "",
-            profit: "",
-          },
-        }));
-      }
-      if (isError) {
-        alert("Something went wrong. Please try again.");
+    let mounted = true;
+    if (mounted && message !== '') {
+      if (message === 'GiftCard Created Succesfully') {
+        Notification({
+          type: 'success',
+          message,
+        });
+      } else if (message === 'Card Deleted Successfully') {
+        Notification({
+          type: 'success',
+          message,
+        });
+      } else if ((message && message?.status === 500) || (message && message?.status === 401)) {
+        if (message === undefined || message === 'undefined') return;
+        Notification({
+          type: 'error',
+          message: 'Something went wrong',
+        });
       }
     }
 
-    return () => (mount = false);
-  }, [isSuccess, isError]);
-
-  console.log(pic);
+    return () => {
+      dispatch(clearMessage());
+      mounted = false;
+    };
+  }, [message, dispatch, showModal]);
 
   return (
     <>
       <Modal
-        show={showModal}
-        setShow={setShowModal}
-        top="5vh"
-        transition={{ duration: 0.5, type: { type: "spring" } }}
-        background={"var(--color-primary)"}
-        initial={{ scale: 0.5, opacity: 0 }}
-        exit={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        theme="rgba(0, 0, 0, .7)"
-        padding="0"
-        overFlow={"auto"}
-        height={Query ? "90%" : "90%"}
-        left={Query ? "30%" : "5%"}
-        width={Query ? "50%" : "90%"}
-        borderradius="2px"
-        zindex="99"
-        btn
+        open={showModal}
+        handleCancel={() => setShowModal(false)}
+        title="Add GiftCard"
+        handleSumbit={handleCreateCard}
+        loading={isCreating === 'loading'}
       >
         <FormContainer className="formContainer">
           <form onSubmit={handleCreateCard}>
-            <Input
-              type="text"
-              label="Card Name"
-              name="cardName"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              ref={userRef}
-              value={formdata.controls.cardName}
-              onChange={handleInputChange}
-            />
-            <Selects
-              name={"cardType"}
-              label="Card Type"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              flex={"1"}
-              option={CardType}
-              value={formdata.controls.cardType}
-              onChange={handleInputChange}
-              defaults="--Select Card Type--"
-            />
-            <Selects
-              name={"category"}
-              label="Card Category"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              flex={"1"}
-              option={Cardcategory}
-              value={formdata.controls.category}
-              onChange={handleInputChange}
-              defaults="--Select Card Category--"
-            />
-            <Selects
-              name={"country"}
-              label="Country"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              flex={"1"}
-              option={data}
-              value={formdata.controls.country}
-              onChange={handleInputChange}
-              defaults="--Select Country--"
-            />
-            <Input
-              type="text"
-              label="Currency"
-              name="currency"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              value={useCurrency?.currency}
-              readOnly
-            />
-            <Input
-              type="number"
-              label="RMB"
-              name="rmb"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              value={formdata.controls.rmb}
-              onChange={handleInputChange}
-            />
-            <Input
-              type="number"
-              label="Card Rate"
-              name="cardRate"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              value={formdata.controls.cardRate}
-              onChange={handleInputChange}
-            />
-            <Input
-              type="number"
-              label="Profit"
-              name="profit"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              value={formdata.controls.profit}
-              onChange={handleInputChange}
-            />
+            <div style={{ margin: '1rem 0' }}>
+              <label>Card Name</label>
+              <Input
+                type="text"
+                name="cardName"
+                ref={userRef}
+                value={formdata.controls.cardName}
+                onChange={(data, value) => handleInputChange(data, value, 'cardName')}
+                style={{ width: '100%', height: '40px' }}
+              />
+            </div>
+            <div style={{ margin: '1rem 0' }}>
+              <label>Card Type</label>
+              <Select
+                name={'cardType'}
+                options={CardType}
+                value={formdata.controls.cardType}
+                onChange={(data, value) => handleInputChange(data, value, 'cardType')}
+                style={{ width: '100%', height: '40px' }}
+              />
+            </div>
 
-            <Input
-              type="number"
-              label="Rate"
-              name="rate"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              value={rate}
-              readOnly
-            />
+            <div style={{ margin: '1rem 0' }}>
+              <label>Category</label>
+              <Select
+                name={'category'}
+                options={CategoryList}
+                value={formdata.controls.category}
+                onChange={(data, value) => handleInputChange(data, value, 'category')}
+                style={{ width: '100%', height: '40px' }}
+              />
+            </div>
 
-            <input
-              type="file"
-              label="Image"
-              name="image"
-              height={"50px"}
-              onChange={handleImage}
-            />
-            <div className="btnContianer">
-              <Button
-                text={isLoading ? "Loading" : "Create card"}
-                background={"#fff"}
-                boxShadow="none"
-                color={"#333"}
-                width="100%"
-                height={"50px"}
-                disabled={isLoading}
+            {/* <div style={{ margin: '1rem 0' }}>
+              <label>Country </label>
+              <Select
+                name={'country'}
+                options={[]}
+                value={formdata.controls.country}
+                onChange={handleInputChange}
+                style={{ width: '100%', height: '40px' }}
+              />
+            </div> */}
+            <div style={{ margin: '1rem 0' }}>
+              <label>Currency</label>
+              <Input
+                type="text"
+                name="currency"
+                style={{ width: '100%', height: '40px' }}
+                value={formdata?.controls?.category?.country?.currency}
+                readOnly
+                disabled
+              />
+            </div>
+            <div style={{ margin: '1rem 0' }}>
+              <label>RMB Rate</label>
+              <Input
+                type="number"
+                name="rmb"
+                style={{ width: '100%', height: '40px' }}
+                value={formdata.controls.rmb}
+                onChange={(data, value) => handleInputChange(data, value, 'rmb')}
+              />
+            </div>
+            <div style={{ margin: '1rem 0' }}>
+              <label>Card Rate</label>
+              <Input
+                type="number"
+                name="cardRate"
+                style={{ width: '100%', height: '40px' }}
+                value={formdata.controls.cardRate}
+                onChange={(data, value) => handleInputChange(data, value, 'cardRate')}
+              />
+            </div>
+            <div style={{ margin: '1rem 0' }}>
+              <label>Profit</label>
+              <Input
+                type="number"
+                name="profit"
+                style={{ width: '100%', height: '40px' }}
+                value={formdata.controls.profit}
+                onChange={(data, value) => handleInputChange(data, value, 'profit')}
+              />
+            </div>
+
+            <div style={{ margin: '1rem 0' }}>
+              <label>Rate</label>
+              <Input
+                type="number"
+                name="rate"
+                style={{ width: '100%', height: '40px' }}
+                value={rate}
+                readOnly
+                disabled
+              />
+            </div>
+            <div style={{ margin: '1rem 0' }}>
+              <label>Image URL</label>
+              <Input
+                type="text"
+                name="image"
+                style={{ width: '100%', height: '40px' }}
+                onChange={(data, value) => handleInputChange(data, value, 'image')}
+                value={formdata.controls.image}
               />
             </div>
           </form>
         </FormContainer>
       </Modal>
       <Section>
-        <Header
-          title={"Gift card"}
-          Giftcard
-          handleShowModal={handleShowModal}
-        />
+        <Header title={'Gift card'} Giftcard handleShowModal={handleShowModal} />
         <main>
-          <GiftContainer className="snaps-inline ">
-            {AllCards?.map((item) => (
-              <GiftCard>
-                <img src={item?.image} alt="card" width="100px" />
-                <p>{item.name}</p>
-                <span
-                  className="Delete"
-                  onClick={() => handleDeleteCard(item.id)}
-                >
-                  <IconsMain icon="ant-design:delete-outlined" />
-                </span>
-              </GiftCard>
-            ))}
-          </GiftContainer>
+          {isGetting === 'loading' ? (
+            'loading'
+          ) : (
+            <GiftContainer className="snaps-inline ">
+              {giftcards && giftcards.length > 0
+                ? giftcards?.map((item) => (
+                    <GiftCard key={item.id}>
+                      <img src={item?.image} alt="card" width="100px" className="image" />
+                      <p>{item.name}</p>
+                      <span className="Delete" onClick={() => handleDeleteCard(item.id)}>
+                        <IconsMain icon="ant-design:delete-outlined" />
+                      </span>
+                    </GiftCard>
+                  ))
+                : 'No Card Found'}
+            </GiftContainer>
+          )}
         </main>
       </Section>
     </>
@@ -372,37 +324,40 @@ export default Giftcard;
 
 const GiftContainer = styled.div`
   --_spacer: var(--size-3);
-  display: grid;
+  /* display: grid;
   gap: var(--_spacer);
   grid-auto-flow: column;
-  grid-auto-columns: 50%;
-
+  grid-auto-columns: 50%; */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   padding: 0 var(--_spacer) var(--_spacer);
-
+  /* 
   overflow-x: auto;
-  overscroll-behavior-inline: contain;
+  overscroll-behavior-inline: contain; */
 
-  .snaps-inline {
+  /* .snaps-inline {
     scroll-snap-type: inline mandatory;
     scroll-padding-inline: var(--_spacer, 1rem);
   }
 
   .snaps-inline > * {
     scroll-snap-align: start;
-  }
+  } */
 `;
 const GiftCard = styled.div`
   position: relative;
-  display: grid;
-  grid-template-rows: min-content;
+  /* display: grid; */
+  /* grid-template-rows: min-content; */
   gap: var(--_spacer);
   padding: var(--_spacer);
-  background: var(--surface-2);
-  border-radius: var(--radius-2);
-  box-shadow: var(--shadow-2);
+  background: transparent;
+  /* border-radius: var(--radius-2); */
+  /* box-shadow: var(--shadow-2); */
   position: relative;
-  background-color: #fff;
-  height: 250px;
+  background-color: transparent;
+  height: 220px;
+  /* width: 400px;
+    max-width: 400px;  */
   > {
     inline-size: 100%;
     aspect-ratio: 16 / 9;
@@ -413,8 +368,8 @@ const GiftCard = styled.div`
 
   .Delete {
     position: absolute;
-    right: 10px;
-    top: 10px;
+    right: 25px;
+    top: 20px;
     border: 1px solid var(--color-main);
     border-radius: 50px;
     width: 30px;
@@ -429,5 +384,11 @@ const GiftCard = styled.div`
       background-color: var(--color-main);
       opacity: 0.7;
     }
+  }
+
+  .image {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
   }
 `;

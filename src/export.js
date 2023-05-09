@@ -6,3 +6,5 @@ export { default as User } from "./app/Pages/User";
 export { default as Transactions } from "./app/Pages/Transaction";
 export { default as Wallet } from "./app/Pages/Wallet";
 export { default as Currency } from "./app/Pages/Currency";
+export { default as Category } from "./app/Pages/Category";
+

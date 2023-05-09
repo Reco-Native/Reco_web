@@ -1,17 +1,18 @@
-import React, { useEffect } from "react";
-import Header from "../../component/Nav/Header";
-import styled from "styled-components";
-import { SectionStyles } from "../../style/styles.";
-import Button from "../../component/FormElements/Button";
-import Input from "../../component/FormElements/Input";
-import Select from "../../component/FormElements/Select";
-import Modal from "../../component/Modal/Modal";
-import { ThemeContextAPI } from "../../context/useContext";
-import useMediaQuery from "../../hooks/useMediaQuery/useMediaQuery";
-import { useAddNewCurrencyMutation } from "../../store/services/createCurrency";
-import { useGetCurrencyMutation } from "../../store/services/fetchCurrency";
-import Data from "../../api/country.json";
-import { useCallback } from "react";
+import React, { useEffect, useMemo } from 'react';
+import Header from '../../component/Nav/Header';
+import styled from 'styled-components';
+import { SectionStyles } from '../../style/styles.';
+import { Input, Select } from 'antd';
+// import Button from '../../component/FormElements/Button';
+// import Input from '../../component/FormElements/Input';
+// import Select from '../../component/FormElements/Select';
+import Modal from '../../component/Modal/Modal';
+import { ThemeContextAPI } from '../../context/useContext';
+import Data from '../../api/country.json';
+import { useDispatch, useSelector } from 'react-redux';
+import { CreateCurrency, AllCurrency } from '../../store/services/currency';
+import { Notification } from '../../component/Notification/Notification';
+import { clearMessage } from '../../store/slice/messageSlice';
 
 const Section = styled.section`
   ${SectionStyles}
@@ -48,167 +49,153 @@ const Conatiner = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-
 `;
 
 const Currency = () => {
-  const [addNewCurrency, { isLoading, isSuccess, isError }] =
-    useAddNewCurrencyMutation();
-  const [getCurrency, { data }] = useGetCurrencyMutation();
+  const dispatch = useDispatch();
+  const { isCreating, currencies, isFetching } = useSelector((state) => state.currency);
+  const { message } = useSelector((state) => state.message);
+
   const { setFormdata, formdata } = React.useContext(ThemeContextAPI);
   const [showModal, setShowModal] = React.useState(false);
-  const Query = useMediaQuery("(min-width: 66rem)");
-  const [state, setState] = React.useState({
-    country: "Afghanistan",
-  });
 
   const handleShowModal = () => {
     setShowModal((prev) => !prev);
   };
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+
+  async function handleCountryChange(data, e) {
     setFormdata((s) => ({
       ...s,
       controls: {
         ...s.controls,
-        [name]: value,
+        country: e,
       },
     }));
-  };
-
-  async function handleCountryChange(event) {
-    const country = event.target.value;
-
-    if (country === "") {
-      await setState((s) => ({
-        ...s,
-        country: "",
-      }));
-      return false;
-    } else {
-      const selectedCountry = Data.filter(
-        (country_) => country_.name === country
-      )[0];
-
-      await setState((s) => ({
-        ...s,
-        country: selectedCountry.name,
-        phoneC: selectedCountry.dial_code,
-      }));
-    }
   }
 
   const handleCreateCard = async (e) => {
     e.preventDefault();
-    const { currency } = formdata.controls;
+    const { country } = formdata.controls;
+    const findCurrency = currencies && currencies.length > 0 && currencies.find((c) => c.name === country.label);
 
-    const form = {
-      name: state.country,
-      currency: currency,
+    if (findCurrency && findCurrency.name) {
+      return Notification({
+        type: 'warning',
+        message: 'Country already exist',
+      });
+    }
+    const data = {
+      name: country.label,
+      currency: country.currency,
     };
-    await addNewCurrency(form);
-    await getCurrency();
+
+    dispatch(CreateCurrency({ data, setShowModal, setFormdata }));
   };
 
-  const GetAllCurrency = useCallback(async () => {
-    await getCurrency();
-  }, []);
+  const FetchCurrencies = () => {
+    const data = '';
+    dispatch(AllCurrency({ data }));
+  };
 
   useEffect(() => {
-    GetAllCurrency();
+    FetchCurrencies();
   }, []);
 
   useEffect(() => {
     let mounted = true;
-    if (mounted) {
-      if (isSuccess) {
-        alert("Country Created Successfully");
-        setFormdata((s) => ({
-          ...s,
-          controls: {
-            ...s,
-            currency: "",
-          },
-        }));
-        setShowModal((prev) => !prev);
-      }
-      if (isError) {
-        alert("Something went wrong.Please try again");
+    if (mounted && message !== '' && showModal) {
+      if (message === 'Currency Created Succesfully') {
+        Notification({
+          type: 'success',
+          message,
+        });
+      } else {
+        Notification({
+          type: 'error',
+          message,
+        });
       }
     }
 
-    return () => (mounted = false);
-  }, [isSuccess, isError, setFormdata]);
+    return () => {
+      dispatch(clearMessage());
+      mounted = false;
+    };
+  }, [message, dispatch, showModal]);
+
+  const UseList = useMemo(() => {
+    return (
+      Data.length > 0 &&
+      Data.map((item) => {
+        return {
+          label: item.name,
+          value: item.name,
+          key: item.iso2,
+          currency: item.currency,
+        };
+      })
+    );
+  }, []);
+
   return (
     <>
       <Modal
-        show={showModal}
-        setShow={setShowModal}
-        top="15vh"
-        transition={{ duration: 0.5, type: { type: "spring" } }}
-        background={"var(--color-primary)"}
-        initial={{ scale: 0.5, opacity: 0 }}
-        exit={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        theme="rgba(0, 0, 0, .7)"
-        padding="0"
-        overFlow={"auto"}
-        left={Query ? "30%" : "5%"}
-        width={Query ? "50%" : "90%"}
-        borderradius="2px"
-        zindex="99"
+        open={showModal}
+        handleCancel={() => setShowModal(false)}
+        handleSumbit={handleCreateCard}
+        title={'Add Currency'}
+        loading={isCreating === 'loading'}
       >
         <FormContainer className="formContainer">
           <form onSubmit={handleCreateCard}>
-            <Select
-              label={"Country"}
-              name={"country"}
-              height={"50px"}
-              color="var( --color-header-two)"
-              focusColor={"#ffc107"}
-              option={Data}
-              onChange={handleCountryChange}
-              flex={"1"}
-              defaults="--Select Country--"
-            />
-            <Input
-              type="text"
-              label="Currency"
-              name="currency"
-              height={"50px"}
-              focusColor={"var(--color-secondary)"}
-              focusBg="#fefeff"
-              value={formdata.controls.currency}
-              onChange={handleInputChange}
-            />
-
-            <div className="btnContianer">
-              <Button
-                text={isLoading ? "Loading" : "Create Card"}
-                background={"#fff"}
-                boxShadow="none"
-                color={"#333"}
-                width="100%"
-                height={"50px"}
-                disabled={isLoading}
+            <div>
+              <label>Select Country </label>
+              <Select
+                name={'country'}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.label ?? '').toLowerCase()?.includes(input.toLowerCase())}
+                options={UseList}
+                onChange={(data, e) => handleCountryChange(data, e)}
+                style={{ height: '45px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label>Country Currency: Populated Automatically</label>
+              <Input
+                type="text"
+                label="Currency"
+                name="currency"
+                value={formdata?.controls?.country?.currency}
+                style={{ height: '40px' }}
+                disabled
               />
             </div>
           </form>
         </FormContainer>
       </Modal>
       <Section>
-        <Header
-          title={"Currency"}
-          addCurrency
-          handleShowModal={handleShowModal}
-        />
+        <Header title={'Currency'} addCurrency handleShowModal={handleShowModal} />
 
         <main className="main">
-          <Conatiner>
-            {data?.map((item) => (
-              <Card>{item.name}</Card>
-            ))}
-          </Conatiner>
+          {isFetching === 'laoding' ? (
+            'Laoding'
+          ) : (
+            <Conatiner>
+              {currencies && currencies.length > 0 ? (
+                currencies?.map((item) => (
+                  <Card key={item.id}>
+                    <p> Country: {item.name}</p>
+                    <p> Currency: {item.currency}</p>
+                  </Card>
+                ))
+              ) : (
+                <div>
+                  <h4>No Country/Currency Found</h4>
+                </div>
+              )}
+            </Conatiner>
+          )}
         </main>
       </Section>
     </>

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Button from "../FormElements/Button";
+import {Button} from 'antd'
 
 const Container = styled.div`
   position: relative;
@@ -46,7 +46,7 @@ const Container = styled.div`
   }
 `;
 
-const Header = ({ title, Giftcard, handleShowModal, addCurrency }) => {
+const Header = ({ title, Giftcard, handleShowModal, addCurrency, btnTitle}) => {
   return (
     <Container>
       <div>
@@ -55,21 +55,28 @@ const Header = ({ title, Giftcard, handleShowModal, addCurrency }) => {
           {Giftcard && (
             <div>
               <Button
-                text={"Add Card"}
+                text={""}
                 background="var(--color-main)"
                 padding={"10px 15px"}
                 onClick={handleShowModal}
-              />
+                size='large'
+                type='primary'
+              >
+                Add Card
+                </Button>
             </div>
           )}
           {addCurrency && (
             <div>
               <Button
-                text={"Add Card"}
                 background="var(--color-main)"
                 padding={"10px 15px"}
                 onClick={handleShowModal}
-              />
+                size='large'
+                type='primary'
+              >
+                {btnTitle ? btnTitle : 'Add Card'}
+                </Button>
             </div>
           )}
         </div>

@@ -1,13 +1,12 @@
-import React, { useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { ThemeContextAPI } from "../context/useContext";
-import { useDispatch } from "react-redux";
-import FormAdmin from "./FormAdmin";
-import { setUser } from "../store/slice/user";
-import CryptoJS from "crypto-js";
-import { useLoginUserMutation } from "../store/services/login";
-import { getToken } from "../store/slice/componentSlice";
+import React, { useContext, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { ThemeContextAPI } from '../context/useContext';
+import { useDispatch, useSelector } from 'react-redux';
+import FormAdmin from './FormAdmin';
+import { LoginUser } from '../store/services/login';
+import { clearMessage } from '../store/slice/messageSlice';
+import { Notification } from '../component/Notification/Notification';
 
 const Section = styled.section`
   position: relative;
@@ -76,8 +75,9 @@ const Card = styled.div`
 `;
 
 const Login = () => {
-  const [loginUser, { isLoading, error, isSuccess, isError, data }] =
-    useLoginUserMutation();
+  const { isLogging, user } = useSelector((state) => state.login);
+  const { message } = useSelector((state) => state.message);
+
   const { setFormdata, formdata } = useContext(ThemeContextAPI);
 
   const dispatch = useDispatch();
@@ -87,38 +87,30 @@ const Login = () => {
     e.preventDefault();
     const { email, password } = formdata.controls;
     // setIsLoading(true);
-    const form = {
+    const data = {
       usernameOrEmail: email,
       password: password,
     };
-
-    loginUser(form);
-
+    dispatch(LoginUser({ data, setFormdata }));
   };
 
   useEffect(() => {
     let mounted = true;
 
-    if (mounted) {
-      if (isSuccess) {
-        let ciphertext = CryptoJS.AES.encrypt(
-          JSON.stringify(data),
-          "secret key 123"
-        ).toString();
-
-        localStorage.setItem("user", ciphertext);
-        dispatch(getToken(data));
-        navigate("/dashboard");
-      }
-      if (isError) {
-        alert("Something went wrong");
+    if (mounted && message) {
+      if (message === 'Login Successful!') {
+        Notification({ type: 'success', message: 'Login Successful' });
+        navigate('/dashboard');
+      } else if (message && message.status === 401) {
+        Notification({ type: 'error', message: 'Unauthorized Access' });
       }
     }
 
     return () => {
       mounted = false;
+      dispatch(clearMessage());
     };
-  }, [isSuccess, isError]);
+  }, [message, dispatch]);
 
   return (
     <Section>
@@ -129,12 +121,7 @@ const Login = () => {
             <Link to="/">Home</Link>
           </div>
           <div className="card-body">
-            <FormAdmin
-              handleLogin={handleLogin}
-              isLoading={isLoading}
-              setFormdata={setFormdata}
-              formdata={formdata}
-            />
+            <FormAdmin handleLogin={handleLogin} isLoading={isLogging} setFormdata={setFormdata} formdata={formdata} />
           </div>
         </Card>
       </div>

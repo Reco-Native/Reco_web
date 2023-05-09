@@ -104,6 +104,15 @@ const SideBar = () => {
           </li>
           <li>
             <NavLink
+              to="/dashboard/category"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              <IconsMain icon="fa6-solid:money-bill-1-wave" />
+              <span> Category</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
               to="/dashboard/giftcards"
               className={({ isActive }) => (isActive ? "active" : "")}
             >

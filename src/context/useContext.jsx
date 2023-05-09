@@ -9,9 +9,12 @@ export const ProviderAPI = ({ children }) => {
       email: "",
       password: "",
       cardName: "",
-      category: "",
+      category: {},
       Cardamount: "",
       image: "",
+      country: {},
+      status: '',
+      remark: ''
     },
   });
 

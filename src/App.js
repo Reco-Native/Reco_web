@@ -9,6 +9,7 @@ import {
   User,
   Wallet,
   Currency,
+  Category
 } from "./export";
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
           <Route>
             <Route index element={<Dashboard />} />
             <Route path="currency" element={<Currency />} />
+            <Route path="category" element={<Category />} />
             <Route path="giftcards" element={<GiftCard />} />
             <Route path="users" element={<User />} />
             <Route path="transactions" element={<Transactions />} />
