@@ -101,8 +101,11 @@ const Login = () => {
       if (message === 'Login Successful!') {
         Notification({ type: 'success', message: 'Login Successful' });
         navigate('/dashboard');
-      } else if (message && message.status === 401) {
+      } else if (message && message.status === 401 ) {
         Notification({ type: 'error', message: 'Unauthorized Access' });
+      } else {
+        Notification({ type: 'error', message: 'Something went wrong' });
+
       }
     }
 
