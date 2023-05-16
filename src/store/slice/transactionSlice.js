@@ -16,14 +16,14 @@ export const transactionSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(GetTransactions.pending, (state, action) => {
-        state.isPosting = 'loading';
+        state.isGetting = 'loading';
       })
       .addCase(GetTransactions.fulfilled, (state, action) => {
-        state.isPosting = 'succeeded';
+        state.isGetting = 'succeeded';
         state.transactions = action.payload;
       })
       .addCase(GetTransactions.rejected, (state, action) => {
-        state.isPosting = 'failed';
+        state.isGetting = 'failed';
         state.error = action.error.message;
       })
       .addCase(UpdateTransaction.pending, (state, action) => {

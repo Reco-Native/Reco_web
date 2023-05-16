@@ -1,18 +1,36 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
+import { GetAllUsers } from '../services/users';
 
 export const UserSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState: {
-   userInfo: {},
+    userInfo: {},
+    allusers: {},
+    decodeUser: {}
   },
   reducers: {
     setUser: (state, action) => {
-      console.log(action.payload)
       state.userInfo = action.payload;
     },
+    setEncoded: (state, action) => {
+      state.decodeUser = action.payload;
+    },
   },
-  extraReducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(GetAllUsers.pending, (state, action) => {
+        state.isFetching = 'loading';
+      })
+      .addCase(GetAllUsers.fulfilled, (state, action) => {
+        state.isFetching = 'succeeded';
+        state.allusers = action.payload;
+      })
+      .addCase(GetAllUsers.rejected, (state, action) => {
+        state.isFetching = 'failed';
+        state.error = action.error.message;
+      });
+  },
 });
 
-export const { setUser } = UserSlice.actions;
+export const { setUser,setEncoded } = UserSlice.actions;
 export default UserSlice.reducer;

@@ -1,8 +1,9 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import styled from "styled-components";
-import { AdminSideBarStyle } from "../style/styles.";
-import IconsMain from "./Icon";
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { AdminSideBarStyle } from '../style/styles.';
+import IconsMain from './Icon';
+import { LogOut } from '../store/services/LogOut';
 
 const Aside = styled.aside`
   ${AdminSideBarStyle}
@@ -75,6 +76,8 @@ const Aside = styled.aside`
 `;
 
 const SideBar = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       <Aside>
@@ -83,80 +86,58 @@ const SideBar = () => {
           <li>
             <NavLink
               to="/dashboard"
-              className={({ isActive }) =>
-                isActive && window.location.pathname === "/dashboard"
-                  ? "active"
-                  : ""
-              }
+              className={({ isActive }) => (isActive && window.location.pathname === '/dashboard' ? 'active' : '')}
             >
               <IconsMain icon="fa-solid:fire" styles="icon" />
               <span> Dashboard</span>
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="/dashboard/currency"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
+            <NavLink to="/dashboard/currency" className={({ isActive }) => (isActive ? 'active' : '')}>
               <IconsMain icon="fa6-solid:money-bill-1-wave" />
               <span> Currency</span>
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="/dashboard/category"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
+            <NavLink to="/dashboard/category" className={({ isActive }) => (isActive ? 'active' : '')}>
               <IconsMain icon="fa6-solid:money-bill-1-wave" />
               <span> Category</span>
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="/dashboard/giftcards"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
-              <IconsMain icon="ic:baseline-card-giftcard" styles={"icon"} />
+            <NavLink to="/dashboard/giftcards" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <IconsMain icon="ic:baseline-card-giftcard" styles={'icon'} />
               <span> GiftCard</span>
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="/dashboard/users"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
-              <IconsMain icon="heroicons-outline:user-group" styles={"icon"} />
+            <NavLink to="/dashboard/users" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <IconsMain icon="heroicons-outline:user-group" styles={'icon'} />
               <span>Users</span>
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="/dashboard/transactions"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
-              <IconsMain icon="fa:exchange" styles={"icon"} />
+            <NavLink to="/dashboard/transactions" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <IconsMain icon="fa:exchange" styles={'icon'} />
               <span>Transactions</span>
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="/dashboard/wallet"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
-              <IconsMain
-                icon="fluent:wallet-credit-card-16-regular"
-                styles={"icon"}
-              />
+            <NavLink to="/dashboard/requests" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <IconsMain icon="fa:exchange" styles={'icon'} />
+              <span>Request</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard/wallet" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <IconsMain icon="fluent:wallet-credit-card-16-regular" styles={'icon'} />
               <span>Wallet</span>
             </NavLink>
           </li>
         </ul>
         <div>
-          <NavLink
-            to="#"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            <IconsMain icon="icomoon-free:switch" styles={"icon"} />
+          <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => LogOut(navigate)}>
+            <IconsMain icon="icomoon-free:switch" styles={'icon'} />
             Logout
           </NavLink>
         </div>

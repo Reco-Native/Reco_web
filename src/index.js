@@ -7,20 +7,8 @@ import './index.css';
 import { store } from './store/store';
 import reportWebVitals from './reportWebVitals';
 import { ProviderAPI } from './context/useContext';
-import axios from 'axios';
-import { GetToken } from './hooks/getToken.js/getToken';
-
-const BaseURL = 'https://rico.herokuapp.com/api';
-
-axios.defaults.baseURL = BaseURL;
 
 
-const token = GetToken()
-
-axios.defaults.headers = {
-  'Content-Type': 'application/json',
-  'authorization': `${token}`,
-};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

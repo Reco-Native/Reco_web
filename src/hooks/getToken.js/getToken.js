@@ -6,7 +6,7 @@ export const GetToken = () => {
   if (!User) return;
 
   var bytes = CryptoJS.AES.decrypt(User, secret());
-  var originalText = bytes.toString(CryptoJS.enc.Utf8);
+  var originalText = bytes?.toString(CryptoJS.enc.Utf8);
 
   return JSON.parse(originalText).accessToken;
 };

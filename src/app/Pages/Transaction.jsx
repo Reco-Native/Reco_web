@@ -131,6 +131,7 @@ const Transaction = () => {
             rate: item?.giftCard?.rate,
             profit: item?.giftCard?.profit,
             status: item.status,
+            image: item.imageList,
           };
         })
       : [];
@@ -199,6 +200,13 @@ const Transaction = () => {
         loading={isUpdating === 'loading'}
       >
         <div>
+          {TableData.length > 0 && TableData[0]?.image?.length > 0
+            ? TableData[0]?.image.map((item,i) => (
+                <div>
+                  <img src={item} alt="" key={i} />
+                </div>
+              ))
+            : ''}
           <label>Status</label>
           <Select
             options={Status}

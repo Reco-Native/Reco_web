@@ -6,8 +6,11 @@ import message from './slice/messageSlice';
 import currencySlice from './slice/currencySlice';
 import categorySlice from './slice/categorySlice';
 import giftCardSlice from './slice/giftCardslice';
-import { UserSlice } from './slice/user';
+import UserSlice  from './slice/user';
 import transactionSlice from './slice/transactionSlice';
+import requestSlice  from './slice/requestSlice.';
+import walletSlice from './slice/walletSlice';
+
 export const store = configureStore({
   reducer: {
     // Add the generated reducer as a specific top-level slice
@@ -21,6 +24,8 @@ export const store = configureStore({
     category: categorySlice,
     giftcard: giftCardSlice,
     transaction: transactionSlice,
+    request: requestSlice,
+    wallet: walletSlice
   },
   // Adding the api middleware enables caching, invalidation, polling,
   // and other useful features of `rtk-query`.

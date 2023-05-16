@@ -1,7 +1,7 @@
-import React from 'react'
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 import Header from '../../component/Nav/Header';
-import { SectionStyles } from "../../style/styles.";
+import { SectionStyles } from '../../style/styles.';
 
 const Section = styled.section`
   ${SectionStyles}
@@ -10,9 +10,9 @@ const Section = styled.section`
 const Dashboard = () => {
   return (
     <Section>
-      <Header title={"Dashboard"} />
+      <Header title={'Dashboard'} />
     </Section>
   );
-}
+};
 
-export default Dashboard
+export default Dashboard;
