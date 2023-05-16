@@ -4,6 +4,7 @@ import styled from "styled-components";
 import SideBar from "../component/SideBar";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
+import Nav from "../component/Nav/Nav";
 
 const LayoutContainer = styled.div`
   display: block;
@@ -29,7 +30,7 @@ const Layout = () => {
   return (
     <React.Fragment>
       <LayoutContainer
-        grid={navtoggle}
+        grid={navtoggle ? 'true' : 'false'}
         as={motion.div}
         initial={{ gridTemplateColumns: "250px 1fr" }}
         animate={{ gridTemplateColumns: navtoggle ? "65px 1fr" : "250px 1fr" }}
@@ -41,6 +42,7 @@ const Layout = () => {
       >
         <SideBar />
         <Container>
+          <Nav />
           <Outlet />
         </Container>
       </LayoutContainer>

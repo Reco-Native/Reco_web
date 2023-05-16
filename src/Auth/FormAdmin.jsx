@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useRef } from "react";
-import Button from "../component/FormElements/Button";
-import Input from "../component/FormElements/Input";
-import styled from "styled-components";
-import { ThemeContextAPI } from "../context/useContext";
+import React, { useEffect, useRef } from 'react';
+// import Button from '../component/FormElements/Button';
+import { Input, Button } from 'antd';
+import styled from 'styled-components';
 
 const ButtonWrapper = styled.div`
   margin-bottom: 25px;
@@ -10,17 +9,16 @@ const ButtonWrapper = styled.div`
   display: -webkit-flex;
   align-items: center;
   justify-content: space-between;
-  flex-direction: ${(props) => props.keep && "column"};
-  gap: ${(props) => props.keep && "1rem"};
+  flex-direction: ${(props) => props.keep && 'column'};
+  gap: ${(props) => props.keep && '1rem'};
 
   a {
     color: var(--color-secondary);
     font-weight: 500;
   }
 `;
-const FormAdmin = ({ handleLogin, isLoading, keep }) => {
+const FormAdmin = ({ handleLogin, isLoading, keep, setFormdata, formdata }) => {
   const userRef = useRef();
-  const { setFormdata, formdata } = useContext(ThemeContextAPI);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,12 +36,31 @@ const FormAdmin = ({ handleLogin, isLoading, keep }) => {
   }, []);
   return (
     <form
-      autoComplete="Off"
-      autoSave="Off"
-      autoCorrect="Off"
+      autoComplete='Off'
+      autoSave='Off'
+      autoCorrect='Off'
       onSubmit={handleLogin}
     >
-      <Input
+      <div style={{ margin: '1rem 0' }}>
+        <Input
+          placeholder='Email'
+          value={formdata.controls.email}
+          onChange={(data) => handleInputChange(data, 'email')}
+          name='email'
+          style={{ height: '40px' }}
+        />
+      </div>
+      <div style={{ margin: '1rem 0' }}>
+        <Input.Password
+          placeholder='Password'
+          value={formdata.controls.password}
+          onChange={(data) => handleInputChange(data, 'password')}
+          name='password'
+          style={{ height: '40px' }}
+        />
+      </div>
+
+      {/* <Input
         type="email"
         label="Email"
         name="email"
@@ -54,26 +71,27 @@ const FormAdmin = ({ handleLogin, isLoading, keep }) => {
         onChange={handleInputChange}
         inputref={userRef}
         autoComplete="off"
-      />
-      <Input
-        type="password"
-        label="Password"
-        name="password"
-        height={"50px"}
-        focusColor={"var(--color-secondary)"}
-        focusBg="#fefeff"
-        onChange={handleInputChange}
-      />
+      /> */}
+
       <ButtonWrapper keep={keep}>
         <Button
-          text="Login"
-          height="50px"
-          width={"100%"}
+          type='primary'
+          style={{ width: '100%' }}
+          size='large'
+          onClick={handleLogin}
+          loading={isLoading === 'loading' ? true : false}
+        >
+          Login{' '}
+        </Button>
+        {/* <Button
+          text={isLoading ? 'Loading...' : 'Login'}
+          height='50px'
+          width={'100%'}
           disabled={isLoading}
-          background={"var(--color-main)"}
-          boxShadow={keep && "none !important"}
-          borderRadius={keep && "50px"}
-        />
+          background={'var(--color-main)'}
+          boxShadow={keep && 'none !important'}
+          borderRadius={keep && '50px'}
+        /> */}
       </ButtonWrapper>
     </form>
   );

@@ -8,6 +8,13 @@ export const ProviderAPI = ({ children }) => {
       name: "",
       email: "",
       password: "",
+      cardName: "",
+      category: {},
+      Cardamount: "",
+      image: "",
+      country: {},
+      status: '',
+      remark: ''
     },
   });
 

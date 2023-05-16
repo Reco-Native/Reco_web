@@ -1,8 +1,12 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-
-import FormAdmin from "./FormAdmin";
+import React, { useContext, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { ThemeContextAPI } from '../context/useContext';
+import { useDispatch, useSelector } from 'react-redux';
+import FormAdmin from './FormAdmin';
+import { LoginUser } from '../store/services/login';
+import { clearMessage } from '../store/slice/messageSlice';
+import { Notification } from '../component/Notification/Notification';
 
 const Section = styled.section`
   position: relative;
@@ -71,8 +75,45 @@ const Card = styled.div`
 `;
 
 const Login = () => {
-  //   const dispatch = useDispatch();
-  //   const navigate = useNavigate();
+  const { isLogging, user } = useSelector((state) => state.login);
+  const { message } = useSelector((state) => state.message);
+
+  const { setFormdata, formdata } = useContext(ThemeContextAPI);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const { email, password } = formdata.controls;
+    // setIsLoading(true);
+    const data = {
+      usernameOrEmail: email,
+      password: password,
+    };
+    dispatch(LoginUser({ data, setFormdata }));
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted && message) {
+      if (message === 'Login Successful!') {
+        Notification({ type: 'success', message: 'Login Successful' });
+        navigate('/dashboard');
+      } else if (message && message.status === 401 ) {
+        Notification({ type: 'error', message: 'Unauthorized Access' });
+      } else {
+        Notification({ type: 'error', message: 'Something went wrong' });
+
+      }
+    }
+
+    return () => {
+      mounted = false;
+      dispatch(clearMessage());
+    };
+  }, [message, dispatch]);
 
   return (
     <Section>
@@ -83,7 +124,7 @@ const Login = () => {
             <Link to="/">Home</Link>
           </div>
           <div className="card-body">
-            <FormAdmin />
+            <FormAdmin handleLogin={handleLogin} isLoading={isLogging} setFormdata={setFormdata} formdata={formdata} />
           </div>
         </Card>
       </div>

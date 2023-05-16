@@ -1,0 +1,17 @@
+.Modal-btn {
+  background: transparent !important;
+}
+
+.Modal-Padding {
+  margin: 0 !important;
+}
+
+.sliderComponent {
+  margin-bottom: 1rem;
+  height: max(1vw, 0.7rem);
+}
+
+.sliderComponent .rc-slider-rail {
+  background-color: #e9e9e9;
+  height: max(1vw, 0.7rem);
+}
