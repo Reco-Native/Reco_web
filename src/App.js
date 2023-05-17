@@ -14,12 +14,14 @@ const App = () => {
   const BaseURL = 'https://rico-10xn.onrender.com/api';
 
   axios.defaults.baseURL = BaseURL;
-  
-    
-  axios.defaults.headers = {
-    'Content-Type': 'application/json',
-    'authorization': `${token}`,
-  };  useEffect(() => {
+
+  axios.defaults.headers.common['Authorization'] = ` ${token}`;
+  // axios.defaults.headers = {
+  //   'Content-Type': 'application/json',
+  //   'authorization': `${token}`,
+  // };
+
+  useEffect(() => {
     if (!token) return;
     const data = '';
     dispatch(GetAllUsers({ data }));
