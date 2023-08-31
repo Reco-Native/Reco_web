@@ -8,3 +8,5 @@ export { default as Wallet } from './app/Pages/Wallet';
 export { default as Currency } from './app/Pages/Currency';
 export { default as Category } from './app/Pages/Category';
 export { default as Requests } from './app/Pages/Request';
+export { default as WalletTransactions} from './app/Pages/WalletTransactions'
+export { default as UserTransactions} from './app/Pages/UserWalletTransactions'

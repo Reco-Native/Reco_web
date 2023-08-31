@@ -119,7 +119,7 @@ const SideBar = () => {
           <li>
             <NavLink to="/dashboard/transactions" className={({ isActive }) => (isActive ? 'active' : '')}>
               <IconsMain icon="fa:exchange" styles={'icon'} />
-              <span>Transactions</span>
+              <span>Card Transactions</span>
             </NavLink>
           </li>
           <li>
@@ -129,9 +129,15 @@ const SideBar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/dashboard/wallet" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <NavLink to="/dashboard/wallet/balance" className={({ isActive }) => (isActive ? 'active' : '')}>
               <IconsMain icon="fluent:wallet-credit-card-16-regular" styles={'icon'} />
               <span>Wallet</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard/wallet/transactions" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <IconsMain icon="ant-design:transaction-outlined" styles={'icon'} />
+              <span>Wallet Transactions</span>
             </NavLink>
           </li>
         </ul>

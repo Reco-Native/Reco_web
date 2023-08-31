@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import Header from '../../component/Nav/Header';
 import { SectionStyles } from '../../style/styles.';
 import { useDispatch, useSelector } from 'react-redux';
-import { GetAllWallets, GetUserwallet } from '../../store/services/wallet';
+import { GetAllWallets } from '../../store/services/wallet';
 import { Table } from 'antd';
 import { UserInfo } from '../../hooks/userInfo';
+import { useNavigate } from 'react-router-dom';
 
 const Section = styled.section`
   ${SectionStyles}
@@ -28,10 +29,12 @@ const columns = [
 
 const Wallet = () => {
   const dispatch = useDispatch();
-  const { allwithdraws, isFetching, userWallet } = useSelector((state) => state.wallet);
+  const navigate = useNavigate();
+  const { allwithdraws, isFetching } = useSelector((state) => state.wallet);
   const { allusers } = useSelector((state) => state.user);
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState(null);
+  const [selectedRowKeys] = useState(null);
+
   useEffect(() => {
     const data = '';
     dispatch(GetAllWallets({ data }));
@@ -44,14 +47,16 @@ const Wallet = () => {
             key: item.userId,
             id: item.id,
             userId: UserInfo(allusers, item.userId).useedName,
-            currentBalance: item.currentBalance,
+            currentBalance: parseFloat(item.currentBalance).toLocaleString(),
           };
         })
       : [];
-  }, [allwithdraws]);
+  }, [allwithdraws, allusers]);
 
   const onSelectChange = (newSelectedRowKeys) => {
-    setSelectedRowKeys(newSelectedRowKeys);
+
+    navigate(`/dashboard/wallet/transactions/${newSelectedRowKeys[0]}`);
+    // setSelectedRowKeys(newSelectedRowKeys);
   };
   const rowSelection = {
     selectedRowKeys,
@@ -59,12 +64,12 @@ const Wallet = () => {
     type: 'radio',
   };
 
-  useEffect(() => {
-    if (selectedRowKeys?.length > 0) {
-      const data = selectedRowKeys[0];
-      dispatch(GetUserwallet({ data, setSelectedRowKeys }));
-    }
-  }, [selectedRowKeys, dispatch]);
+  // useEffect(() => {
+  //   if (selectedRowKeys?.length > 0) {
+  //     const data = selectedRowKeys[0];
+  //     dispatch(GetUserwallet({ data, setSelectedRowKeys }));
+  //   }
+  // }, [selectedRowKeys, dispatch]);
 
   return (
     <Section>
