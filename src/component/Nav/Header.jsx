@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import {Button} from 'antd'
+import React from 'react';
+import styled from 'styled-components';
+import { Button, Select } from 'antd';
 
 const Container = styled.div`
   position: relative;
@@ -10,7 +10,7 @@ const Container = styled.div`
   margin: 0 auto;
 
   h1 {
-    font-family: "Nunito", sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
     margin-right: auto !important;
     font-weight: 700 !important;
   }
@@ -27,6 +27,7 @@ const Container = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 
     .icon {
       color: #fff;
@@ -46,37 +47,39 @@ const Container = styled.div`
   }
 `;
 
-const Header = ({ title, Giftcard, handleShowModal, addCurrency, btnTitle}) => {
+const Header = ({ title, Giftcard, handleShowModal, addCurrency, btnTitle, select, options, onChange,onSelect }) => {
   return (
     <Container>
       <div>
         <div className="head">
           <h1>{title}</h1>
+          {select && <Select placeholder='Select option' onSelect={onSelect} options={options} onChange={onChange} style={{ width: '10%', height: '40px' }} />}
+
           {Giftcard && (
             <div>
               <Button
-                text={""}
+                text={''}
                 background="var(--color-main)"
-                padding={"10px 15px"}
+                padding={'10px 15px'}
                 onClick={handleShowModal}
-                size='large'
-                type='primary'
+                size="large"
+                type="primary"
               >
                 Add Card
-                </Button>
+              </Button>
             </div>
           )}
           {addCurrency && (
             <div>
               <Button
                 background="var(--color-main)"
-                padding={"10px 15px"}
+                padding={'10px 15px'}
                 onClick={handleShowModal}
-                size='large'
-                type='primary'
+                size="large"
+                type="primary"
               >
                 {btnTitle ? btnTitle : 'Add Card'}
-                </Button>
+              </Button>
             </div>
           )}
         </div>

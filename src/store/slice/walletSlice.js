@@ -1,11 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { GetAllWallets, GetUserwallet } from '../services/wallet';
+import {
+  GetAllWallets,
+  GetUserwallet,
+  GetWalletTransaction,
+  AddFund,
+  GetWalletTransactionStatus,
+  userWalletTransaction,
+  userTransactionByStatus,
+} from '../services/wallet';
 
 export const walletSlice = createSlice({
   name: 'walletSlice',
   initialState: {
     allwithdraws: {},
     userWallet: {},
+    walletTransactionHistory: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -30,6 +39,65 @@ export const walletSlice = createSlice({
       })
       .addCase(GetUserwallet.rejected, (state, action) => {
         state.fetching = 'failed';
+        state.error = action.error.message;
+      })
+
+      .addCase(GetWalletTransaction.pending, (state, action) => {
+        state.gettingHistory = 'loading';
+      })
+      .addCase(GetWalletTransaction.fulfilled, (state, action) => {
+        state.gettingHistory = 'succeeded';
+        state.walletTransactionHistory = action.payload;
+      })
+      .addCase(GetWalletTransaction.rejected, (state, action) => {
+        state.gettingHistory = 'failed';
+        state.error = action.error.message;
+      })
+
+      .addCase(AddFund.pending, (state, action) => {
+        state.addingfund = 'loading';
+      })
+      .addCase(AddFund.fulfilled, (state, action) => {
+        state.addingfund = 'succeeded';
+      })
+      .addCase(AddFund.rejected, (state, action) => {
+        state.addingfund = 'failed';
+        state.error = action.error.message;
+      })
+
+      .addCase(GetWalletTransactionStatus.pending, (state, action) => {
+        state.gettingHistory = 'loading';
+      })
+      .addCase(GetWalletTransactionStatus.fulfilled, (state, action) => {
+        state.gettingHistory = 'succeeded';
+        state.walletTransactionHistory = action.payload;
+      })
+      .addCase(GetWalletTransactionStatus.rejected, (state, action) => {
+        state.gettingHistory = 'failed';
+        state.error = action.error.message;
+      })
+
+      .addCase(userWalletTransaction.pending, (state, action) => {
+        state.gettingHistory = 'loading';
+      })
+      .addCase(userWalletTransaction.fulfilled, (state, action) => {
+        state.gettingHistory = 'succeeded';
+        state.walletTransactionHistory = action.payload;
+      })
+      .addCase(userWalletTransaction.rejected, (state, action) => {
+        state.gettingHistory = 'failed';
+        state.error = action.error.message;
+      })
+
+      .addCase(userTransactionByStatus.pending, (state, action) => {
+        state.gettingHistory = 'loading';
+      })
+      .addCase(userTransactionByStatus.fulfilled, (state, action) => {
+        state.gettingHistory = 'succeeded';
+        state.walletTransactionHistory = action.payload;
+      })
+      .addCase(userTransactionByStatus.rejected, (state, action) => {
+        state.gettingHistory = 'failed';
         state.error = action.error.message;
       });
   },

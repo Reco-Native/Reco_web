@@ -1,6 +1,19 @@
 import { Routes, Route } from 'react-router-dom';
 import RequireAuth from './component/Protected';
-import { Layout, Login, Dashboard, GiftCard, Transactions, User, Wallet, Currency, Category, Requests } from './export';
+import {
+  Layout,
+  Login,
+  Dashboard,
+  GiftCard,
+  Transactions,
+  User,
+  Wallet,
+  Currency,
+  Category,
+  Requests,
+  WalletTransactions,
+  UserTransactions,
+} from './export';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { GetAllUsers } from './store/services/users';
@@ -11,7 +24,7 @@ const App = () => {
   const token = GetToken();
   const dispatch = useDispatch();
 
-  const BaseURL = 'https://rico-10xn.onrender.com/api';
+  const BaseURL = 'https://my-service-474ad9a5e434.herokuapp.com/api';
 
   axios.defaults.baseURL = BaseURL;
 
@@ -39,7 +52,11 @@ const App = () => {
             <Route path="users" element={<User />} />
             <Route path="transactions" element={<Transactions />} />
             <Route path="requests" element={<Requests />} />
-            <Route path="wallet" element={<Wallet />} />
+            <Route path="wallet">
+              <Route path="balance" element={<Wallet />} index />
+              <Route path="transactions" element={<WalletTransactions />} />
+              <Route element={<UserTransactions />} path="transactions/:id" />
+            </Route>
           </Route>
         </Route>
       </Route>
