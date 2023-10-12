@@ -4,74 +4,27 @@ import Header from '../../component/Nav/Header';
 import { SectionStyles } from '../../style/styles.';
 import { useDispatch, useSelector } from 'react-redux';
 import { GetTransactions, UpdateTransaction } from '../../store/services/transaction';
-import { Button, Input, Select, Table } from 'antd';
+import { Button, Input, Popconfirm, Select, Table } from 'antd';
 import Modal from '../../component/Modal/Modal';
 import { ThemeContextAPI } from '../../context/useContext';
 import { clearMessage } from '../../store/slice/messageSlice';
 import { Notification } from '../../component/Notification/Notification';
+import { GetCards } from '../../store/services/giftCard';
 
 const Section = styled.section`
   ${SectionStyles}
 `;
 
-const columns = [
-  {
-    title: 'Date',
-    dataIndex: 'date',
-  },
-  {
-    title: 'Name',
-    dataIndex: 'name',
-  },
-  {
-    title: 'Type',
-    dataIndex: 'type',
-  },
-  {
-    title: 'Amount',
-    dataIndex: 'amount',
-  },
-  {
-    title: 'CategoryName',
-    dataIndex: 'categoryname',
-  },
-  {
-    title: 'Country',
-    dataIndex: 'country',
-  },
-  {
-    title: 'Currency',
-    dataIndex: 'currency',
-  },
-  {
-    title: 'Rate',
-    dataIndex: 'rate',
-  },
-  {
-    title: 'Profit',
-    dataIndex: 'profit',
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-  },
-];
-
 const Status = [
   {
     key: 1,
-    label: 'SUBMITTED',
-    value: 'SUBMITTED',
-  },
-  {
-    key: 2,
-    label: 'PROCESSING',
-    value: 'PROCESSING',
+    label: 'PENDING',
+    value: 'PENDING',
   },
   {
     key: 3,
-    label: 'APPROVAL',
-    value: 'APPROVAL',
+    label: 'APPROVED',
+    value: 'APPROVED',
   },
   {
     key: 4,
@@ -87,6 +40,109 @@ const Transaction = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState(null);
   const { transactions, isGetting, isUpdating } = useSelector((state) => state.transaction);
   const { message } = useSelector((state) => state.message);
+  const { giftcards } = useSelector((state) => state.giftcard);
+
+  const [dataSource] = useState([
+    {
+      title: 'Date',
+      dataIndex: 'date',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+    },
+    {
+      title: 'CategoryName',
+      dataIndex: 'categoryname',
+    },
+    {
+      title: 'Country',
+      dataIndex: 'country',
+    },
+    {
+      title: 'Currency',
+      dataIndex: 'currency',
+    },
+    {
+      title: 'Rate',
+      dataIndex: 'rate',
+    },
+    {
+      title: 'Profit',
+      dataIndex: 'profit',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+    },
+  ]);
+
+  const columns = [
+    {
+      title: 'Date',
+      dataIndex: 'date',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+    },
+    {
+      title: 'CategoryName',
+      dataIndex: 'categoryname',
+    },
+    {
+      title: 'Country',
+      dataIndex: 'country',
+    },
+    {
+      title: 'Currency',
+      dataIndex: 'currency',
+    },
+    {
+      title: 'Rate',
+      dataIndex: 'rate',
+    },
+    {
+      title: 'Profit',
+      dataIndex: 'profit',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: (_, record) =>
+        dataSource.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => {
+              setSelectedRowKeys(record?.key);
+              setShowModal(true);
+            }}
+          >
+            Action
+          </Popconfirm>
+        ) : null,
+    },
+  ];
 
   const handleInputChange = (data, value, name) => {
     setFormdata((s) => ({
@@ -108,17 +164,50 @@ const Transaction = () => {
 
   const UpdateRecord = () => {
     const { status, remark } = formdata.controls;
-    const id = selectedRowKeys[0];
+    const id = selectedRowKeys;
     const data = {
       status,
       remark,
     };
+
     dispatch(UpdateTransaction({ id, data, setShowModal, setSelectedRowKeys }));
   };
 
+  const displayCard = useMemo(() => {
+    if (giftcards && giftcards.length > 0 && transactions && transactions.length > 0) {
+      let data = transactions.map((item) => {
+        let card = giftcards.find((c) => c.id === item.giftCardId);
+        if (card && card.id) {
+          return {
+            ...item,
+            giftCard: {
+              id: card?.id,
+              adminRate: card?.adminRate,
+              cardRate: card?.cardRate,
+              duration: card?.duration,
+              name: card?.name,
+              profit: card?.profit,
+              rate: card?.rate,
+              rmbRate: card?.rmbRate,
+              type: card?.type,
+              category: card?.category,
+              denomination: card?.denomination,
+            },
+          };
+        }
+
+        return item;
+      });
+
+      return data;
+    } else {
+      return [];
+    }
+  }, [transactions, giftcards]);
+
   const TableData = useMemo(() => {
-    return transactions && transactions.length > 0
-      ? transactions.map((item) => {
+    return displayCard && displayCard.length > 0
+      ? displayCard.map((item) => {
           return {
             key: item.id,
             date: new Date(item.date).toLocaleString(),
@@ -135,34 +224,7 @@ const Transaction = () => {
           };
         })
       : [];
-  }, [transactions]);
-
-  const onSelectChange = (newSelectedRowKeys) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-    type: 'radio',
-  };
-
-  useEffect(() => {
-    if (selectedRowKeys && selectedRowKeys.length > 0 && !isNaN(selectedRowKeys[0])) {
-      const filterData = transactions.filter((item) => item.id === selectedRowKeys[0]);
-      if (filterData?.length > 0) {
-        setFormdata((s) => ({
-          ...s,
-          controls: {
-            ...s.controls,
-            status: filterData[0].status,
-            remark: filterData[0].remark,
-          },
-        }));
-      }
-
-      setShowModal(true);
-    }
-  }, [selectedRowKeys]);
+  }, [displayCard]);
 
   useEffect(() => {
     let mounted = true;
@@ -187,6 +249,15 @@ const Transaction = () => {
     };
   }, [message, dispatch, showModal]);
 
+  useEffect(() => {
+    const getCard = () => {
+      const data = '';
+      dispatch(GetCards({ data }));
+    };
+
+    getCard();
+  }, [dispatch]);
+
   return (
     <Section>
       <Modal
@@ -201,7 +272,7 @@ const Transaction = () => {
       >
         <div>
           {TableData.length > 0 && TableData[0]?.image?.length > 0
-            ? TableData[0]?.image.map((item,i) => (
+            ? TableData[0]?.image.map((item, i) => (
                 <div>
                   <img src={item} alt="" key={i} />
                 </div>
@@ -231,7 +302,7 @@ const Transaction = () => {
       <main>
         <Table
           loading={isGetting === 'loading'}
-          rowSelection={rowSelection}
+          // rowSelection={rowSelection}
           columns={columns}
           dataSource={TableData}
           scroll={{ x: true, scrollToFirstRowOnChange: true }}

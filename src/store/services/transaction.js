@@ -8,7 +8,7 @@ const AllTransactions = () => {
 };
 
 const UpdateTrans = (data, id) => {
-  return axios.put(`/v1/transaction/${id}`, data);
+  return axios.patch(`/v1/transact/transaction/${id}`, data);
 };
 
 export const GetTransactions = createAsyncThunk('GetTransactions/GET', async ({ data }, thunkAPI) => {
@@ -39,6 +39,7 @@ export const UpdateTransaction = createAsyncThunk(
     } catch (error) {
       const message = ErrorHandler(error);
 
+      alert('Something went wrong. Please try again later');
       thunkAPI.dispatch(setMessage(message));
       return thunkAPI.rejectWithValue();
     }

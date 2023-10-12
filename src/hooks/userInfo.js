@@ -1,8 +1,7 @@
 import CryptoJS from 'crypto-js';
-import { secret } from './getToken.js/secret';
 
 export const UserInfo = (allUser, id) => {
-  var bytes = CryptoJS.AES.decrypt(allUser, secret());
+  var bytes = CryptoJS.AES.decrypt(allUser, process.env.REACT_APP_SECRET);
   var originalText = bytes?.toString(CryptoJS.enc.Utf8);
   let mainUsers = [];
   if (originalText) {

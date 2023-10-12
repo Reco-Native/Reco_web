@@ -68,7 +68,7 @@ const Giftcard = () => {
     };
 
     getCard();
-  }, []);
+  }, [dispatch]);
 
   const { setFormdata, formdata } = React.useContext(ThemeContextAPI);
   const userRef = React.useRef();

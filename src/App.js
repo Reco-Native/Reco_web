@@ -26,7 +26,7 @@ const App = () => {
 
   const BaseURL = 'https://my-service-474ad9a5e434.herokuapp.com/api';
 
-  axios.defaults.baseURL = BaseURL;
+  axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
   axios.defaults.headers.common['Authorization'] = ` ${token}`;
   // axios.defaults.headers = {
