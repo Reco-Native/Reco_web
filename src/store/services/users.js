@@ -2,7 +2,6 @@ import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { setMessage } from '../slice/messageSlice';
 import { ErrorHandler } from '../../component/Notification/ErrorHandler';
-import { secret } from '../../hooks/getToken.js/secret';
 import CryptoJS from 'crypto-js';
 
 const AllUsers = () => {
@@ -13,7 +12,7 @@ export const GetAllUsers = createAsyncThunk('GetAllUsers/GET', async ({ data }, 
   try {
     const response = await AllUsers();
     thunkAPI.dispatch(setMessage('Users Fetched Successful'));
-    let ciphertext = CryptoJS.AES.encrypt(JSON.stringify(response.data), secret()).toString();
+    let ciphertext = CryptoJS.AES.encrypt(JSON.stringify(response.data), process.env.REACT_APP_SECRET);
 
     return ciphertext;
   } catch (error) {

@@ -24,7 +24,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { setMessage } from '../slice/messageSlice';
 import CryptoJS from 'crypto-js';
 import { ErrorHandler } from '../../component/Notification/ErrorHandler';
-import { secret } from '../../hooks/getToken.js/secret';
 
 const LoginURL = (data) => {
   return axios.post(`/auth/login`, data);
@@ -39,7 +38,7 @@ export const LoginUser = createAsyncThunk('loginUser/Post', async ({ data, setFo
       password: '',
       confirmpassword: '',
     }));
-    let ciphertext = CryptoJS.AES.encrypt(JSON.stringify(response.data), secret()).toString();
+    let ciphertext = CryptoJS.AES.encrypt(JSON.stringify(response.data), process.env.REACT_APP_SECRET);
 
     localStorage.setItem('user', ciphertext);
     return response.data;

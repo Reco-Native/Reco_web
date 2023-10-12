@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { SectionStyles } from '../../style/styles.';
 import Modal from '../../component/Modal/Modal';
@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { AddFund, userTransactionByStatus, userWalletTransaction } from '../../store/services/wallet';
 import { UserInfo } from '../../hooks/userInfo';
-import { Input, Table } from 'antd';
+import { Input, Popconfirm, Table } from 'antd';
 import { ThemeContextAPI } from '../../context/useContext';
 
 const Section = styled.section`
@@ -19,6 +19,102 @@ const UserWalletTransactions = () => {
   const { id } = useParams();
   const [showModal, setShowModal] = React.useState(false);
   const { allusers } = useSelector((state) => state.user);
+
+  const [dataSource] = useState([
+    {
+      title: 'Id',
+      dataIndex: 'id',
+    },
+    {
+      title: 'UserId',
+      dataIndex: 'userId',
+    },
+    {
+      title: 'AccountName',
+      dataIndex: 'accountName',
+    },
+    {
+      title: 'AccountNumber',
+      dataIndex: 'accountNumber',
+    },
+    {
+      title: 'BankName',
+      dataIndex: 'bankName',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+    },
+    {
+      title: 'Balance',
+      dataIndex: 'balance',
+    },
+    {
+      title: 'TransactionType',
+      dataIndex: 'transactionType',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+    },
+  ]);
+
+  const columns = [
+    {
+      title: 'Id',
+      dataIndex: 'id',
+    },
+    {
+      title: 'UserId',
+      dataIndex: 'userId',
+    },
+    {
+      title: 'AccountName',
+      dataIndex: 'accountName',
+    },
+    {
+      title: 'AccountNumber',
+      dataIndex: 'accountNumber',
+    },
+    {
+      title: 'BankName',
+      dataIndex: 'bankName',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+    },
+    {
+      title: 'Balance',
+      dataIndex: 'balance',
+    },
+    {
+      title: 'TransactionType',
+      dataIndex: 'transactionType',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: (_, record) =>
+        dataSource.length >= 1 ? (
+          <Popconfirm title="Sure to delete?" >
+            Delete
+          </Popconfirm>
+        ) : null,
+    },
+  ];
 
   const dispatch = useDispatch();
   const { walletTransactionHistory, gettingHistory, addingfund } = useSelector((state) => state.wallet);
@@ -64,8 +160,8 @@ const UserWalletTransactions = () => {
       return alert('No User Found');
     }
 
-    if(!formdata.controls.fund) {
-        return alert('Enter Amount')
+    if (!formdata.controls.fund) {
+      return alert('Enter Amount');
     }
     const data = {
       amount: formdata.controls.fund,
@@ -145,48 +241,5 @@ const DATA = [
     id: 4,
     label: 'Failed',
     value: 'Failed',
-  },
-];
-
-const columns = [
-  {
-    title: 'Id',
-    dataIndex: 'id',
-  },
-  {
-    title: 'UserId',
-    dataIndex: 'userId',
-  },
-  {
-    title: 'AccountName',
-    dataIndex: 'accountName',
-  },
-  {
-    title: 'AccountNumber',
-    dataIndex: 'accountNumber',
-  },
-  {
-    title: 'BankName',
-    dataIndex: 'bankName',
-  },
-  {
-    title: 'Amount',
-    dataIndex: 'amount',
-  },
-  {
-    title: 'Balance',
-    dataIndex: 'balance',
-  },
-  {
-    title: 'TransactionType',
-    dataIndex: 'transactionType',
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-  },
-  {
-    title: 'Date',
-    dataIndex: 'date',
   },
 ];

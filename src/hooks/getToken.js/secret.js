@@ -1,3 +1,1 @@
-export const secret = () => {
-  return 'rico12345678910';
-};
+export const secret = () => {};
