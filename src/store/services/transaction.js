@@ -26,7 +26,7 @@ export const GetTransactions = createAsyncThunk('GetTransactions/GET', async ({ 
 
 export const UpdateTransaction = createAsyncThunk(
   'UpdateTransaction/PUT',
-  async ({ data, id, setShowModal, setSelectedRowKeys }, thunkAPI) => {
+  async ({ data, id, setShowModal, setSelectedRowKeys, setIsSaving }, thunkAPI) => {
     try {
       const response = await UpdateTrans(data, id);
       thunkAPI.dispatch(setMessage('Updated Successfully'));
@@ -34,11 +34,12 @@ export const UpdateTransaction = createAsyncThunk(
 
       setSelectedRowKeys(null);
       setShowModal(false);
+      setIsSaving(false);
 
       return response.data;
     } catch (error) {
       const message = ErrorHandler(error);
-
+      setIsSaving(false);
       alert('Something went wrong. Please try again later');
       thunkAPI.dispatch(setMessage(message));
       return thunkAPI.rejectWithValue();

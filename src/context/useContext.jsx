@@ -14,9 +14,13 @@ export const ProviderAPI = ({ children }) => {
       image: "",
       country: {},
       status: '',
-      remark: '',
+      remarks: '',
       fund: '',
-      user: ''
+      user: '',
+      amount: '',
+      images: [],
+      blob: []
+
     },
   });
 

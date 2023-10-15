@@ -73,6 +73,10 @@ const Aside = styled.aside`
     margin-right: 20px;
     text-align: center;
   }
+
+  @media screen and (max-width: 60rem) {
+    display: none;
+  }
 `;
 
 const SideBar = () => {
