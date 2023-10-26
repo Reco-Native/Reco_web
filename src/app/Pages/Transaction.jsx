@@ -392,7 +392,7 @@ const Transaction = () => {
 
     if (formdata?.controls?.images.length > 0) {
       for (let i = 0; i < formdata?.controls?.images?.length; i++) {
-        objectUrl.push({ id: i, url: URL.createObjectURL(formdata?.controls?.images[i]) });
+        objectUrl.push({ id: i, url: URL?.createObjectURL(formdata?.controls?.images[i]) });
       }
       setFormdata((s) => ({
         ...s,

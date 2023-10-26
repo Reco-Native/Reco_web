@@ -24,7 +24,7 @@ const App = () => {
   const token = GetToken();
   const dispatch = useDispatch();
 
-  const BaseURL = 'https://my-service-474ad9a5e434.herokuapp.com/api';
+  const BaseURL = 'https://rico-service-12a13a5e30bf.herokuapp.com/api';
 
   axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
