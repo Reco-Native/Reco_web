@@ -2,67 +2,126 @@ import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { SectionStyles } from '../../style/styles.';
 import Header from '../../component/Nav/Header';
-import { Input, Table } from 'antd';
+import { Input, Popconfirm, Table } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { GetRequests, UpdateRequest } from '../../store/services/request';
 import Modal from '../../component/Modal/Modal';
 import { ThemeContextAPI } from '../../context/useContext';
+import { EditFilled } from '@ant-design/icons';
 
 const Section = styled.section`
   ${SectionStyles}
 `;
 
-const columns = [
-  {
-    title: 'Date',
-    dataIndex: 'date',
-  },
-  {
-    title: 'Name',
-    dataIndex: 'name',
-  },
-  {
-    title: 'Type',
-    dataIndex: 'type',
-  },
-  {
-    title: 'Amount',
-    dataIndex: 'amount',
-  },
-  {
-    title: 'CategoryName',
-    dataIndex: 'categoryname',
-  },
-  {
-    title: 'Country',
-    dataIndex: 'country',
-  },
-  {
-    title: 'Currency',
-    dataIndex: 'currency',
-  },
-  {
-    title: 'Rate',
-    dataIndex: 'rate',
-  },
-  {
-    title: 'Profit',
-    dataIndex: 'profit',
-  },
-  {
-    title: 'Quantity',
-    dataIndex: 'Quantity',
-  },
-];
-
 const Request = () => {
   const dispatch = useDispatch();
   const { setFormdata, formdata } = React.useContext(ThemeContextAPI);
-
+  const { giftcards } = useSelector((state) => state.giftcard);
   const { allrequest, isGetting, isUpdating } = useSelector((state) => state.request);
   const [selectedRowKeys, setSelectedRowKeys] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [results, setResults] = useState([]);
+  const [dataSource] = useState([
+    {
+      title: 'Date',
+      dataIndex: 'date',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+    },
+    {
+      title: 'CategoryName',
+      dataIndex: 'categoryname',
+    },
+    {
+      title: 'Country',
+      dataIndex: 'country',
+    },
+    {
+      title: 'Currency',
+      dataIndex: 'currency',
+    },
+    {
+      title: 'Rate',
+      dataIndex: 'rate',
+    },
+    {
+      title: 'Profit',
+      dataIndex: 'profit',
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'Quantity',
+    },
+  ]);
+
+  const columns = [
+    {
+      title: 'Date',
+      dataIndex: 'date',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+    },
+    {
+      title: 'CategoryName',
+      dataIndex: 'categoryname',
+    },
+    {
+      title: 'Country',
+      dataIndex: 'country',
+    },
+    {
+      title: 'Currency',
+      dataIndex: 'currency',
+    },
+    {
+      title: 'Rate',
+      dataIndex: 'rate',
+    },
+    {
+      title: 'Profit',
+      dataIndex: 'profit',
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: (_, record) =>
+        dataSource.length >= 1 ? (
+          <Popconfirm
+            title="Want to update?"
+            onConfirm={() => {
+              setSelectedRowKeys(record?.key);
+              setShowModal(true);
+            }}
+          >
+            <EditFilled />
+          </Popconfirm>
+        ) : null,
+    },
+  ];
 
   const handleInputChange = (data, value, name) => {
     setFormdata((s) => ({
@@ -82,9 +141,41 @@ const Request = () => {
     fetchTran();
   }, []);
 
+  const displayCard = useMemo(() => {
+    if (giftcards && giftcards.length > 0 && allrequest && allrequest.length > 0) {
+      let data = allrequest.map((item) => {
+        let card = giftcards.find((c) => c.id === item.giftCardId);
+        if (card && card.id) {
+          return {
+            ...item,
+            giftCard: {
+              id: card?.id,
+              adminRate: card?.adminRate,
+              cardRate: card?.cardRate,
+              duration: card?.duration,
+              name: card?.name,
+              profit: card?.profit,
+              rate: card?.rate,
+              rmbRate: card?.rmbRate,
+              type: card?.type,
+              category: card?.category,
+              denomination: card?.denomination,
+            },
+          };
+        }
+
+        return item;
+      });
+
+      return data;
+    } else {
+      return [];
+    }
+  }, [allrequest, giftcards]);
+
   const TableData = useMemo(() => {
-    return allrequest && allrequest.length > 0
-      ? allrequest.map((item) => {
+    return displayCard && displayCard.length > 0
+      ? displayCard.map((item) => {
           return {
             key: item.id,
             date: new Date(item.requestDate).toLocaleString(),
@@ -100,27 +191,16 @@ const Request = () => {
           };
         })
       : [];
-  }, [allrequest]);
+  }, [displayCard]);
 
-  const onSelectChange = (newSelectedRowKeys) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-    type: 'radio',
-  };
-
-  useEffect(() => {
-    if (selectedRowKeys && selectedRowKeys.length > 0 && !isNaN(selectedRowKeys[0])) {
-      const filterData = allrequest.filter((item) => item.id === selectedRowKeys[0]);
-      if (filterData?.length > 0) {
-        setResults(filterData);
-      }
-
-      setShowModal(true);
-    }
-  }, [selectedRowKeys, allrequest]);
+  // const onSelectChange = (newSelectedRowKeys) => {
+  //   setSelectedRowKeys(newSelectedRowKeys);
+  // };
+  // const rowSelection = {
+  //   selectedRowKeys,
+  //   onChange: onSelectChange,
+  //   type: 'radio',
+  // };
 
   const handleUpdateRecords = () => {
     const { requestComment, requestAmount } = formdata.controls;
@@ -128,7 +208,7 @@ const Request = () => {
       comment: requestComment,
       amount: requestAmount,
     };
-    const id = selectedRowKeys[0];
+    const id = selectedRowKeys;
 
     dispatch(UpdateRequest({ data, setSelectedRowKeys, setShowModal, id }));
   };
@@ -184,7 +264,7 @@ const Request = () => {
       <main>
         <Table
           loading={isGetting === 'loading'}
-          rowSelection={rowSelection}
+          // rowSelection={rowSelection}
           columns={columns}
           dataSource={TableData}
           scroll={{ x: true, scrollToFirstRowOnChange: true }}
